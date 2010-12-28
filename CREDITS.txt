@@ -1,0 +1,3 @@
+Thanks go to the following people for patches and contributions:
+
+* Eric Davis - Maintainer
