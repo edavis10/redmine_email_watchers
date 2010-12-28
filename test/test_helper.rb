@@ -4,35 +4,31 @@ require File.expand_path(File.dirname(__FILE__) + '/../../../../test/test_helper
 # Ensure that we are using the temporary fixture path
 Engines::Testing.set_fixture_path
 
-require "webrat"
-
-Webrat.configure do |config|
-  config.mode = :rails
-end
+require 'capybara/rails'
 
 def User.add_to_project(user, project, role)
   Member.generate!(:principal => user, :project => project, :roles => [role])
 end
 
-module RedmineWebratHelper
+module RedmineCapybaraHelper
   def login_as(user="existing", password="existing")
     visit "/login"
     fill_in 'Login', :with => user
     fill_in 'Password', :with => password
-    click_button 'login'
-    assert_response :success
+    click_button 'Login'
+    assert_equal 200, page.status_code
     assert User.current.logged?
   end
 
   def visit_project(project)
     visit '/'
-    assert_response :success
+    assert_equal 200, page.status_code
 
     click_link 'Projects'
-    assert_response :success
+    assert_equal 200, page.status_code
 
     click_link project.name
-    assert_response :success
+    assert_equal 200, page.status_code
   end
 
   def visit_issue_page(issue)
@@ -43,16 +39,17 @@ module RedmineWebratHelper
     visit url_for(:controller => 'issues', :action => 'bulk_edit', :ids => issues.collect(&:id))
   end
 
-  # Cleanup current_url to remove the host; sometimes it's present, sometimes it's not
-  def current_path
-    return nil if current_url.nil?
-    return current_url.gsub("http://www.example.com","")
-  end
+  # # Cleanup current_url to remove the host; sometimes it's present, sometimes it's not
+  # def current_path
+  #   return nil if current_url.nil?
+  #   return current_url.gsub("http://www.example.com","")
+  # end
 
 end
 
 class ActionController::IntegrationTest
-  include RedmineWebratHelper
+  include RedmineCapybaraHelper
+  include Capybara
 end
 
 class ActiveSupport::TestCase
