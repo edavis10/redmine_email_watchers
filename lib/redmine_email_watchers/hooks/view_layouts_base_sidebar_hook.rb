@@ -8,13 +8,10 @@ module RedmineEmailWatchers
           issue = Issue.visible.find_by_id(context[:request].params['id'])
 
           if issue
-            project = issue.project
-          
             return context[:controller].send(:render_to_string, {
-                                               :partial => 'email_watchers/list',
+                                               :partial => 'email_watchers/sidebar',
                                                :locals => {
-                                                 :issue => issue,
-                                                 :project => project
+                                                 :watched => issue
                                                }
                                              })
           end

@@ -1,0 +1,21 @@
+<% if User.current.allowed_to?(:add_issue_email_watchers, watched.project) ||
+       (watched.email_watchers.present? && User.current.allowed_to?(:view_issue_email_watchers, watched.project)) %>
+  <div id="email_watchers">
+  <%= render :partial => 'email_watchers/list', :locals => {:watched => watched} %>
+  </div>
+<% end %>
+
+<style type="text/css">
+<%# Pulled from application.css from #watchers %>
+#email_watchers ul {margin: 0;  padding: 0;}
+#email_watchers li {list-style-type:none;margin: 0px 2px 0px 0px; padding: 0px 0px 0px 0px;}
+#email_watchers select {width: 95%; display: block;}
+#email_watchers a.delete {opacity: 0.4;}
+#email_watchers a.delete:hover {opacity: 1;}
+#email_watchers img.gravatar {vertical-align: middle;margin: 0 4px 2px 0;}
+</style>
+
+<%# Form is toggled with JS so default it to visible for non-JS users %>
+<script type="text/javascript">
+Element.hide('new-email-watcher-form');
+</script>

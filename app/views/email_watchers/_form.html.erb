@@ -1,1 +1,15 @@
+  <% remote_form_for(:watcher, Watcher.new,
+                     :url => {:controller => 'email_watchers',
+                              :action => 'create',
+                              :object_type => 'issue',
+                              :object_id => watched},
+                     :method => :post,
+                     :html => {:id => 'new-email-watcher-form'}) do |f| %>
+    <p>
+      <%= label_tag :add_email_watcher, l(:text_add_email_watcher) %>
+      <%= text_field_tag :add_email_watcher %>
+    </p>
 
+		<%= submit_tag l(:button_add) %>
+		<%= toggle_link l(:button_cancel), 'new-email-watcher-form' %></p>
+	<% end %>
