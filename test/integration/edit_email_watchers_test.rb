@@ -15,13 +15,7 @@ class EditEmailWatchersTest < ActionController::IntegrationTest
 
     assert_response :success
     assert has_content?('Email Watchers (1)')
-    watchers = Watcher.all(:conditions => {
-                             :watchable_id => @issue.id,
-                             :watchable_type => 'Issue',
-                             :user_id => EmailWatcherUser.default.id
-                           })
-    assert_equal 1, watchers.length
-    assert_equal ['add-new@example.com'], watchers.first.email_watchers
+    assert_issue_is_watched_by_email_watchers(@issue, ['add-new@example.com'])
     
   end
 
@@ -38,17 +32,12 @@ class EditEmailWatchersTest < ActionController::IntegrationTest
 
     assert_response :success
     assert has_content?('Email Watchers (1)')
+    assert_issue_is_watched_by_email_watchers(@issue, ['add-new@example.com'])
 
     fill_in('Add email watcher', :with => 'second@example.com')
     click_button('Add')
     
-    watchers = Watcher.all(:conditions => {
-                             :watchable_id => @issue.id,
-                             :watchable_type => 'Issue',
-                             :user_id => EmailWatcherUser.default.id
-                           })
-    assert_equal 1, watchers.length
-    assert_equal ['add-new@example.com', 'second@example.com'], watchers.first.email_watchers.sort
+    assert_issue_is_watched_by_email_watchers(@issue, ['add-new@example.com', 'second@example.com'])
     
   end
 

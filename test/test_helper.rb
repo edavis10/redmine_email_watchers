@@ -69,6 +69,17 @@ module RedmineCapybaraHelper
     assert_equal converted_code, page.status_code
   end
 
+  def assert_issue_is_watched_by_email_watchers(issue, email_watchers)
+    watchers = Watcher.all(:conditions => {
+                             :watchable_id => issue.id,
+                             :watchable_type => 'Issue',
+                             :user_id => EmailWatcherUser.default.id
+                           })
+    assert_equal 1, watchers.length
+    assert_equal email_watchers.sort, watchers.first.email_watchers.sort
+
+  end
+
   def generate_user_as_project_manager
     @user = User.generate_with_protected!(:login => 'existing', :password => 'existing', :password_confirmation => 'existing')
 
