@@ -64,5 +64,27 @@ class EditEmailWatchersTest < ActionController::IntegrationTest
     assert_equal ['add-new@example.com', 'second@example.com'], watchers.first.email_watchers.sort
     
   end
+
+  should "show validate email watchers before adding" do
+    @user = User.generate_with_protected!(:login => 'existing', :password => 'existing', :password_confirmation => 'existing')
+    login_as
+
+    @project = Project.generate!(:is_public => true)
+    @issue = Issue.generate_for_project!(@project)
+    @role = Role.generate!(:permissions => [:view_issues, :edit_issues, :view_issue_email_watchers, :add_issue_email_watchers])
+    User.add_to_project(@user, @project, @role)
+
+    assert_no_difference('Watcher.count') do
+      ['', 'just text', 'missing-domain-tld@example'].each do |mail|
+        visit_issue_page(@issue)
+        assert_response :success
+        
+        fill_in('Add email watcher', :with => mail)
+        click_button('Add')
+
+        assert_response :missing
+      end
+    end
+  end
 end
 

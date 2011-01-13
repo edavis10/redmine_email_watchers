@@ -2,6 +2,7 @@ class EmailWatchersController < ApplicationController
   unloadable
   before_filter :find_project
   before_filter :authorize
+  before_filter :validate_mail_format
   
   def create
     @watcher = Watcher.first(:conditions => {
@@ -36,5 +37,17 @@ class EmailWatchersController < ApplicationController
     @project = @watched.project
   rescue
     render_404
+  end
+
+  # Taken from User.rb
+  MAIL_REGEX = /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i
+
+  # TODO: move to a model, but which one?
+  def validate_mail_format
+    if params[:add_email_watcher] && params[:add_email_watcher].match(MAIL_REGEX)
+      true
+    else
+      render_404
+    end
   end
 end
