@@ -16,19 +16,19 @@ module RedmineCapybaraHelper
     fill_in 'Login', :with => user
     fill_in 'Password', :with => password
     click_button 'Login'
-    assert_equal 200, page.status_code
+    assert_response :success
     assert User.current.logged?
   end
 
   def visit_project(project)
     visit '/'
-    assert_equal 200, page.status_code
+    assert_response :success
 
     click_link 'Projects'
-    assert_equal 200, page.status_code
+    assert_response :success
 
     click_link project.name
-    assert_equal 200, page.status_code
+    assert_response :success
   end
 
   def visit_issue_page(issue)
@@ -44,6 +44,28 @@ module RedmineCapybaraHelper
   #   return nil if current_url.nil?
   #   return current_url.gsub("http://www.example.com","")
   # end
+
+  # Capybara doesn't set the response object so we need to glue this to
+  # it's own object but without @response
+  def assert_response(code)
+    # Rewrite human status codes to numeric
+    converted_code = case code
+                     when :success
+                       200
+                     when :missing
+                       404
+                     when :redirect
+                       302
+                     when :error
+                       500
+                     when code.is_a?(Symbol)
+                       ActionController::StatusCodes::SYMBOL_TO_STATUS_CODE[code]
+                     else
+                       code
+                     end
+
+    assert_equal converted_code, page.status_code
+  end
 
 end
 
