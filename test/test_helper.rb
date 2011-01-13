@@ -34,6 +34,7 @@ module RedmineCapybaraHelper
 
   def visit_issue_page(issue)
     visit '/issues/' + issue.id.to_s
+    assert_response :success
   end
 
   def visit_issue_bulk_edit_page(issues)
@@ -68,6 +69,16 @@ module RedmineCapybaraHelper
     assert_equal converted_code, page.status_code
   end
 
+  def generate_user_as_project_manager
+    @user = User.generate_with_protected!(:login => 'existing', :password => 'existing', :password_confirmation => 'existing')
+
+    @project = Project.generate!(:is_public => true)
+    @issue = Issue.generate_for_project!(@project)
+    @role = Role.generate!(:permissions => [:view_issues, :edit_issues, :view_issue_email_watchers, :add_issue_email_watchers])
+    User.add_to_project(@user, @project, @role)
+
+    @user
+  end
 end
 
 class ActionController::IntegrationTest
