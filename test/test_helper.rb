@@ -16,7 +16,8 @@ module RedmineCapybaraHelper
     fill_in 'Login', :with => user
     fill_in 'Password', :with => password
     click_button 'Login'
-    assert_response :success
+    # TODO: Removed because sometimes back_url is getting set from tests.
+    # assert_response :success
     assert User.current.logged?
   end
 
@@ -72,6 +73,7 @@ end
 class ActionController::IntegrationTest
   include RedmineCapybaraHelper
   include Capybara
+  
 end
 
 class ActiveSupport::TestCase

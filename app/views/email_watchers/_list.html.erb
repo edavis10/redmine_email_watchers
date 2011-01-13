@@ -1,0 +1,31 @@
+<% if User.current.allowed_to?(:add_issue_watchers, project) ||
+       (issue.email_watchers.present? && User.current.allowed_to?(:view_issue_watchers, project)) %>
+  <div id="email_watchers">
+    <h3><%= l(:text_email_watchers) %> (<%= issue.email_watchers.size %>)</h3>
+
+    <%= render :partial => 'email_watchers/form', :locals => {:watched => issue} %>
+
+    <% if issue.email_watchers.present? %>
+      <ul>
+      <% issue.email_watchers.each do |email_watcher| %>
+        <%# TODO: avatar has a bug that doesn't allow "email@domain.com", it requires "<email@domain.com>" %>
+        <li>
+          <%= avatar("<" + email_watcher.to_s + ">", :size => "16") %>
+          <%= mail_to(h(email_watcher), nil, :encode => 'javascript') %>
+        </li>
+      <% end %>
+      </ul>
+    <% end %>
+    
+  </div>
+<% end %>
+
+<style type="text/css">
+<%# Pulled from application.css from #watchers %>
+#email_watchers ul {margin: 0;  padding: 0;}
+#email_watchers li {list-style-type:none;margin: 0px 2px 0px 0px; padding: 0px 0px 0px 0px;}
+#email_watchers select {width: 95%; display: block;}
+#email_watchers a.delete {opacity: 0.4;}
+#email_watchers a.delete:hover {opacity: 1;}
+#email_watchers img.gravatar {vertical-align: middle;margin: 0 4px 2px 0;}
+</style>
