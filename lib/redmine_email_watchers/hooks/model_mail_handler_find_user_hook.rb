@@ -6,9 +6,9 @@ module RedmineEmailWatchers
         if context[:user].nil? && context[:sender_email].present? && context[:email].in_reply_to.present?
           sender = context[:sender_email]
 
-          # Duplicate from MailHandler because it's private...
+          # Duplicate from MailHandler
           # -- In-Reply-To: <redmine.issue-100.....>
-          issue_match = context[:email].in_reply_to.first.match(%r{^<redmine\.([a-z0-9_]+)\-(\d+)\.\d+@})
+          issue_match = context[:email].in_reply_to.first.match(MailHandler::MESSAGE_ID_RE)
           if issue_match && issue_match[1] == 'issue'
             issue_id = issue_match[2]
 
