@@ -12,6 +12,7 @@ class IssueEditEmailTest < ActionController::IntegrationTest
     visit_issue_page(@issue)
 
     add_email_watcher_through_form 'add-new@example.com'
+    add_email_watcher_through_form 'another@example.com'
 
     assert_difference('Journal.count') do
       fill_in('notes', :with => 'An issue note to trigger an email')
@@ -22,5 +23,6 @@ class IssueEditEmailTest < ActionController::IntegrationTest
     assert_equal 1, ActionMailer::Base.deliveries.size
     mail = ActionMailer::Base.deliveries.last
     assert mail.cc.include?('add-new@example.com')
+    assert mail.cc.include?('another@example.com')
   end
 end
