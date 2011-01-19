@@ -4,22 +4,32 @@ Redmine plugin that will add email addresses as watchers to issues (and other ob
 
 == Features
 
-TODO: fill in features
+* Allows adding email watchers to issues on the issue details page
+* Email watchers will receive issue updates via email
+* Email watchers can also reply to issue updates via email (see below)
 
 == Getting the plugin
 
 A copy of the plugin can be downloaded from {Little Stream Software}[https://projects.littlestreamsoftware.com/projects/redmine-email-watchers/files] or from {GitHub}[http://github.com/edavis10/redmine_email_watchers]
 
-
 == Installation and Setup
 
 1. Follow the Redmine plugin installation steps at: http://www.redmine.org/wiki/redmine/Plugins 
-2. Run the plugin migrations +rake db:migrate_plugins+
+2. (optional) Patch your Redmine if you want to allow email watchers to reply to email (see below)
 3. Restart your Redmine web servers (e.g. mongrel, thin, mod_rails)
+
+== Patching Redmine to allow email watchers to reply to issues via email
+
+In order for email watcher to reply to issues (MailHandler), Redmine needs to be patched. These patches are available on my fork of redmine in the {LSS-2708-mail-handler-find-user-refactoring branch}[https://github.com/edavis10/redmine_for_clients/tree/LSS-2708-mail-handler-find-user-refactoring].
 
 == Usage
 
-TODO: Add usage
+1. Setup permissions for viewing, adding, and deleting email watchers in Redmine's Admin panel
+2. Browse to an issue page
+3. On the sidebar next to the standard Watchers there will be an Email Watchers section
+4. Click Add and enter an email address to add as an email watcher
+
+The plugin will automatically add all email watchers to outgoing issue email notifications.
 
 == License
 
