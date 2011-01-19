@@ -7,6 +7,13 @@ module RedmineEmailWatchers
         base.send(:include, InstanceMethods)
         base.class_eval do
           unloadable
+
+          # Add email_watcher addresses into the watcher_recipients list
+          def watcher_recipients_with_email_watchers
+            watcher_recipients_without_email_watchers + email_watchers
+          end
+          alias_method_chain :watcher_recipients, :email_watchers
+          
         end
       end
 
