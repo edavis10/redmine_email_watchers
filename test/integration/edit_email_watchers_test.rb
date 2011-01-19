@@ -9,11 +9,9 @@ class EditEmailWatchersTest < ActionController::IntegrationTest
     
     assert find(:css, 'div#email_watchers')
     assert has_content?('Email Watchers (0)')
-    
-    fill_in('Add email watcher', :with => 'add-new@example.com')
-    click_button('Add')
 
-    assert_response :success
+    add_email_watcher_through_form 'add-new@example.com'
+
     assert has_content?('Email Watchers (1)')
     assert_issue_is_watched_by_email_watchers(@issue, ['add-new@example.com'])
     
@@ -27,10 +25,8 @@ class EditEmailWatchersTest < ActionController::IntegrationTest
     assert find(:css, 'div#email_watchers')
     assert has_content?('Email Watchers (0)')
     
-    fill_in('Add email watcher', :with => 'add-new@example.com')
-    click_button('Add')
+    add_email_watcher_through_form 'add-new@example.com'
 
-    assert_response :success
     assert has_content?('Email Watchers (1)')
     assert_issue_is_watched_by_email_watchers(@issue, ['add-new@example.com'])
 

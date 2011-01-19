@@ -41,6 +41,12 @@ module RedmineCapybaraHelper
     visit url_for(:controller => 'issues', :action => 'bulk_edit', :ids => issues.collect(&:id))
   end
 
+  def add_email_watcher_through_form(email)
+    fill_in('Add email watcher', :with => email)
+    click_button('Add')
+    assert_response :success
+  end
+
   # # Cleanup current_url to remove the host; sometimes it's present, sometimes it's not
   # def current_path
   #   return nil if current_url.nil?

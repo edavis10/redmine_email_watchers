@@ -11,9 +11,7 @@ class IssueEditEmailTest < ActionController::IntegrationTest
     login_as
     visit_issue_page(@issue)
 
-    fill_in('Add email watcher', :with => 'add-new@example.com')
-    click_button('Add')
-    assert_response :success
+    add_email_watcher_through_form 'add-new@example.com'
 
     assert_difference('Journal.count') do
       fill_in('notes', :with => 'An issue note to trigger an email')
