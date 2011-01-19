@@ -11,6 +11,7 @@ Redmine::Plugin.register :redmine_email_watchers do
   project_module :issue_tracking do
     permission(:view_issue_email_watchers, {})
     permission(:add_issue_email_watchers, {:email_watchers => :create})
+    permission(:delete_issue_email_watchers, {:email_watchers => :destroy})
   end
 end
 

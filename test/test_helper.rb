@@ -85,7 +85,12 @@ module RedmineCapybaraHelper
 
     @project = Project.generate!(:is_public => true)
     @issue = Issue.generate_for_project!(@project)
-    @role = Role.generate!(:permissions => [:view_issues, :edit_issues, :view_issue_email_watchers, :add_issue_email_watchers])
+    @role = Role.generate!(:permissions => [:view_issues,
+                                            :edit_issues,
+                                            :view_issue_email_watchers,
+                                            :add_issue_email_watchers,
+                                            :delete_issue_email_watchers
+                                           ])
     User.add_to_project(@user, @project, @role)
 
     @user

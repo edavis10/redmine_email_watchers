@@ -2,7 +2,7 @@ class EmailWatchersController < ApplicationController
   unloadable
   before_filter :find_project
   before_filter :authorize
-  before_filter :validate_mail_format
+  before_filter :validate_mail_format, :only => [:create]
   
   def create
     @watcher = Watcher.first(:conditions => {
@@ -27,7 +27,30 @@ class EmailWatchersController < ApplicationController
   rescue ::ActionController::RedirectBackError
     render :text => 'Watcher added.', :layout => true
   end
-  
+
+  def destroy
+    # TODO: needs to check for HTTP POST but also allow normal links
+    if params[:delete_email_watcher].present?
+      @watcher = Watcher.first(:conditions => {
+                                 :user_id => EmailWatcherUser.default.id,
+                                 :watchable_type => params[:object_type].camelcase,
+                                 :watchable_id => params[:object_id]
+                               })
+      @watcher.email_watchers.delete(params[:delete_email_watcher])
+      @watcher.save
+    end
+    
+    respond_to do |format|
+      format.html { redirect_to :back }
+      format.js do
+        render :update do |page|
+          page.replace_html 'email_watchers', :partial => 'email_watchers/list', :locals => {:watched => @watched}
+          page << 'Element.hide("new-email-watcher-form");'
+        end
+      end
+    end
+  end
+
   private
   
   def find_project

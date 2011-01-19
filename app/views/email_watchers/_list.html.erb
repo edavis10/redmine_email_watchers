@@ -9,12 +9,27 @@
     <%= render :partial => 'email_watchers/form', :locals => {:watched => watched} %>
 
     <% if watched.email_watchers.present? %>
+      <% remove_allowed = User.current.allowed_to?("delete_issue_email_watchers".to_sym, watched.project) %>
+
       <ul>
       <% watched.email_watchers.each do |email_watcher| %>
         <%# TODO: avatar has a bug that doesn't allow "email@domain.com", it requires "<email@domain.com>" %>
         <li>
           <%= avatar("<" + email_watcher.to_s + ">", :size => "16") %>
           <%= mail_to(h(email_watcher), nil, :encode => 'hex') %><%# Can't use JS because of RJS replacement %>
+          <% if remove_allowed %>
+            <% url = {:controller => 'email_watchers',
+                 :action => 'destroy',
+                 :object_type => 'issue',
+                 :object_id => watched.id,
+                 :delete_email_watcher => email_watcher.to_s
+               } %>
+            <%= link_to_remote(image_tag('delete.png'),
+                               {:url => url},
+                               :href => url_for(url),
+                               :style => "vertical-align: middle",
+                               :class => "delete") %>
+          <% end %>
         </li>
       <% end %>
       </ul>
