@@ -25,3 +25,4 @@ Dispatcher.to_prepare :redmine_email_watchers do
   Watcher.send(:include, RedmineEmailWatchers::Patches::WatcherPatch)
 end
 require 'redmine_email_watchers/hooks/view_layouts_base_sidebar_hook'
+require 'redmine_email_watchers/hooks/model_mail_handler_find_user_hook'
