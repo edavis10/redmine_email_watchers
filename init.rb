@@ -1,12 +1,12 @@
 require 'redmine'
 
 Redmine::Plugin.register :redmine_email_watchers do
-  name 'Redmine Email Watchers plugin'
-  author 'Author name'
-  description 'This is a plugin for Redmine'
-  version '0.0.1'
-  url 'http://example.com/path/to/plugin'
-  author_url 'http://example.com/about'
+  name 'Email Watchers plugin'
+  author 'Eric Davis'
+  description 'Redmine plugin that will add email addresses as watchers to issues (and other objects).'
+  version '0.1.0'
+  url 'https://projects.littlestreamsoftware.com/projects/redmine-misc'
+  author_url 'http://www.littlestreamsoftware.com'
 
   project_module :issue_tracking do
     permission(:view_issue_email_watchers, {})
