@@ -1,6 +1,8 @@
 module RedmineEmailWatchers
   module Hooks
     class ModelMailHandlerFindUserHook < Redmine::Hook::ViewListener
+      # Search which addresses in the EmailWatcherUser to find any email_watchers
+      # who should be given access to the issue
       def model_mail_handler_find_user(context={})
 
         if context[:user].nil? && context[:sender_email].present? && context[:email].in_reply_to.present?
@@ -13,7 +15,6 @@ module RedmineEmailWatchers
             issue_id = issue_match[2]
 
             # Scan through watchers looking for matching email_watchers
-            # TODO: since this is serialized, it will catch a bunch of records
             watcher = Watcher.first(:conditions =>
                                     ['email_watchers IS NOT NULL AND user_id IN (:user) AND watchable_type = "Issue" AND watchable_id IN (:issue_id)',
                                      {
