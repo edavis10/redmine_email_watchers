@@ -10,10 +10,24 @@ module RedmineEmailWatchers
 
           # Duplicate from MailHandler
           # -- In-Reply-To: <redmine.issue-100.....>
-          issue_match = context[:email].in_reply_to.first.match(MailHandler::MESSAGE_ID_RE)
-          if issue_match && issue_match[1] == 'issue'
-            issue_id = issue_match[2]
+          # -- In-Reply-To: <redmine.journal-200.....>
+          header_match = context[:email].in_reply_to.first.match(MailHandler::MESSAGE_ID_RE)
 
+          issue_id = nil
+
+          if header_match
+            if header_match[1] == 'issue'
+              # Reply to issue
+              issue_id = header_match[2]
+            elsif header_match[1] == 'journal'
+              # Reply to journal, find issue
+              if journal = Journal.find_by_id(header_match[2])
+                issue_id = journal.journalized_id
+              end
+            end
+          end
+          
+          if issue_id
             # Scan through watchers looking for matching email_watchers
             watcher = Watcher.first(:conditions =>
                                     ['email_watchers IS NOT NULL AND user_id IN (:user) AND watchable_type = "Issue" AND watchable_id IN (:issue_id)',
