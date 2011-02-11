@@ -1,7 +1,9 @@
 require 'test_helper'
 
 class ReceiveEmailTest < ActionController::IntegrationTest
-  context "from a issue email" do
+  def self.should_allow_email_watchers_to_reply(options={})
+    email_fixture = options[:fixture]
+    
     should "allow receiving email from email watchers to edit an issue" do
       generate_user_as_project_manager
 
@@ -10,7 +12,7 @@ class ReceiveEmailTest < ActionController::IntegrationTest
 
       add_email_watcher_through_form 'jsmith@somenet.foo'
 
-      mail = IO.read(File.dirname(__FILE__) + '/../fixtures/incoming_mail/reply.eml')
+      mail = IO.read(email_fixture)
       mail.gsub!('{{issue-id}}', @issue.id.to_s)
 
       assert_difference('Journal.count') do
@@ -29,7 +31,7 @@ class ReceiveEmailTest < ActionController::IntegrationTest
 
       add_email_watcher_through_form 'jsmith@somenet.foo'
 
-      mail = IO.read(File.dirname(__FILE__) + '/../fixtures/incoming_mail/reply.eml')
+      mail = IO.read(email_fixture)
       mail.gsub!('{{issue-id}}', @issue.id.to_s)
 
       assert_difference('Journal.count') do
@@ -49,7 +51,7 @@ class ReceiveEmailTest < ActionController::IntegrationTest
       # Second issue they aren't watching
       @issue2 = Issue.generate_for_project!(@project)
       
-      mail = IO.read(File.dirname(__FILE__) + '/../fixtures/incoming_mail/reply.eml')
+      mail = IO.read(email_fixture)
       mail.gsub!('{{issue-id}}', @issue2.id.to_s)
 
       assert_difference('Journal.count', 0) do
@@ -58,5 +60,9 @@ class ReceiveEmailTest < ActionController::IntegrationTest
 
     end
 
+  end
+  
+  context "from an issue email" do
+    should_allow_email_watchers_to_reply(:fixture => File.dirname(__FILE__) + '/../fixtures/incoming_mail/reply.eml')
   end
 end
