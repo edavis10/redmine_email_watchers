@@ -6,7 +6,8 @@ class ReceiveEmailTest < ActionController::IntegrationTest
     
     should "allow receiving email from email watchers to edit an issue" do
       generate_user_as_project_manager
-
+      @journal = Journal.generate!(:journalized => @issue, :notes => 'A journal note')
+      
       login_as
       visit_issue_page(@issue)
 
@@ -14,6 +15,7 @@ class ReceiveEmailTest < ActionController::IntegrationTest
 
       mail = IO.read(email_fixture)
       mail.gsub!('{{issue-id}}', @issue.id.to_s)
+      mail.gsub!('{{journal-id}}', @journal.id.to_s)
 
       assert_difference('Journal.count') do
         MailHandler.receive(mail)
@@ -23,6 +25,7 @@ class ReceiveEmailTest < ActionController::IntegrationTest
 
     should "allow receiving email from email watchers to edit an issue on private projects" do
       generate_user_as_project_manager
+      @journal = Journal.generate!(:journalized => @issue, :notes => 'A journal note')
       @project.update_attribute(:is_public, false)
       @project.reload
 
@@ -33,7 +36,8 @@ class ReceiveEmailTest < ActionController::IntegrationTest
 
       mail = IO.read(email_fixture)
       mail.gsub!('{{issue-id}}', @issue.id.to_s)
-
+      mail.gsub!('{{journal-id}}', @journal.id.to_s)
+      
       assert_difference('Journal.count') do
         MailHandler.receive(mail)
       end
@@ -42,7 +46,8 @@ class ReceiveEmailTest < ActionController::IntegrationTest
 
     should "allow not all receiving email from email watchers to a different issue" do
       generate_user_as_project_manager
-
+      @journal = Journal.generate!(:journalized => @issue, :notes => 'A journal note')
+      
       login_as
       visit_issue_page(@issue)
 
@@ -50,10 +55,12 @@ class ReceiveEmailTest < ActionController::IntegrationTest
 
       # Second issue they aren't watching
       @issue2 = Issue.generate_for_project!(@project)
+      @journal2 = Journal.generate!(:journalized => @issue2, :notes => 'A journal note')
       
       mail = IO.read(email_fixture)
       mail.gsub!('{{issue-id}}', @issue2.id.to_s)
-
+      mail.gsub!('{{journal-id}}', @journal2.id.to_s)
+      
       assert_difference('Journal.count', 0) do
         MailHandler.receive(mail)
       end
@@ -64,5 +71,9 @@ class ReceiveEmailTest < ActionController::IntegrationTest
   
   context "from an issue email" do
     should_allow_email_watchers_to_reply(:fixture => File.dirname(__FILE__) + '/../fixtures/incoming_mail/reply.eml')
+  end
+
+  context "from a journal email" do
+    should_allow_email_watchers_to_reply(:fixture => File.dirname(__FILE__) + '/../fixtures/incoming_mail/reply_to_journal.eml')
   end
 end
