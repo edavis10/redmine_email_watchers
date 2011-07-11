@@ -98,7 +98,7 @@ module RedmineCapybaraHelper
                                             :delete_issue_email_watchers
                                            ])
     User.add_to_project(@user, @project, @role)
-
+    @issue.reload
     @user
   end
 end

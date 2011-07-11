@@ -6,7 +6,9 @@ class ReceiveEmailTest < ActionController::IntegrationTest
     
     should "allow receiving email from email watchers to edit an issue" do
       generate_user_as_project_manager
-      @journal = Journal.generate!(:journalized => @issue, :notes => 'A journal note')
+      @issue.init_journal(@user, 'A journal note')
+      assert @issue.save
+      @journal = @issue.journals.last
       
       login_as
       visit_issue_page(@issue)
@@ -25,7 +27,9 @@ class ReceiveEmailTest < ActionController::IntegrationTest
 
     should "allow receiving email from email watchers to edit an issue on private projects" do
       generate_user_as_project_manager
-      @journal = Journal.generate!(:journalized => @issue, :notes => 'A journal note')
+      @issue.init_journal(@issue.author,'A journal note')
+      assert @issue.save
+      @journal = @issue.journals.last      
       @project.update_attribute(:is_public, false)
       @project.reload
 
@@ -46,7 +50,9 @@ class ReceiveEmailTest < ActionController::IntegrationTest
 
     should "allow not all receiving email from email watchers to a different issue" do
       generate_user_as_project_manager
-      @journal = Journal.generate!(:journalized => @issue, :notes => 'A journal note')
+      @issue.init_journal('A journal note')
+      assert @issue.save
+      @journal = @issue.journals.last
       
       login_as
       visit_issue_page(@issue)
@@ -55,7 +61,8 @@ class ReceiveEmailTest < ActionController::IntegrationTest
 
       # Second issue they aren't watching
       @issue2 = Issue.generate_for_project!(@project)
-      @journal2 = Journal.generate!(:journalized => @issue2, :notes => 'A journal note')
+      @journal2 = @issue2.init_journal(@issue2.author, 'A journal note')
+      assert @issue2.save
       
       mail = IO.read(email_fixture)
       mail.gsub!('{{issue-id}}', @issue2.id.to_s)

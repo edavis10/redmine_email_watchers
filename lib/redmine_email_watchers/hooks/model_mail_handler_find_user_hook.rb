@@ -19,10 +19,14 @@ module RedmineEmailWatchers
             if header_match[1] == 'issue'
               # Reply to issue
               issue_id = header_match[2]
-            elsif header_match[1] == 'journal'
+            elsif header_match[1].match(/journal/i)
               # Reply to journal, find issue
               if journal = Journal.find_by_id(header_match[2])
-                issue_id = journal.journalized_id
+                if ChiliProject::Compatibility.using_acts_as_journalized?
+                  issue_id = journal.journaled_id
+                else
+                  issue_id = journal.journalized_id
+                end
               end
             end
           end
